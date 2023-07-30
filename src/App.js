@@ -1,11 +1,10 @@
 
 
-import JoinRoom from "./components/hero/joinroom"
-import CreateRoom from "./components/hero/createroom"
-import Calling from "./components/hero/calling"
-import Recive from "./components/hero/reciver"
+import JoinRoom from "./components/pages/joinroom"
+import CreateRoom from "./components/pages/createroom"
+import Calling from "./components/pages/calling"
+import Recive from "./components/pages/reciver"
 import { HashRouter, Routes, Route, } from "react-router-dom";
-//const socket = io.connect('http://localhost:5000')
 function App() {
 	
 	return(

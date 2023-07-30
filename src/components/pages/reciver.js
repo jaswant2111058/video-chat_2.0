@@ -15,18 +15,23 @@ const Calling =() =>{
 	const [ idToCall, setIdToCall ] = useState()
 	const myVideo = useRef()
 	const userVideo = useRef()
+	const user1Video = useRef()
+	const user2Video = useRef()
+	const user3Video = useRef()
+	const user4Video = useRef()
 	const connectionRef= useRef()
 
-    const peer = useMemo(()=>(new Peer),[]);
+    const peer = useMemo(()=>(new Peer()),[]);
+    peer.on('open', function(id) {
+        setPeerId(id);
+        socket.peerId = id
+      });
     
     useEffect(() => {
 		navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
 			setStream(stream)
 				myVideo.current.srcObject = stream
 		})
-        peer.on('open', function(id) {
-        setPeerId(id);
-      });
           setIdToCall(user.peerId)
 	}, [])
 
