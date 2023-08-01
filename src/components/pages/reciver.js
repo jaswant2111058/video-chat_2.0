@@ -4,6 +4,7 @@ import {Peer} from "peerjs"
 import { CopyToClipboard } from "react-copy-to-clipboard"
 import io from "socket.io-client"
 const socket = io.connect('http://localhost:5000')
+const peer = new Peer()
 
 const Calling =() =>{
 
@@ -15,17 +16,14 @@ const Calling =() =>{
 	const [ idToCall, setIdToCall ] = useState()
 	const myVideo = useRef()
 	const userVideo = useRef()
-	const user1Video = useRef()
-	const user2Video = useRef()
-	const user3Video = useRef()
-	const user4Video = useRef()
-	const connectionRef= useRef()
+	
 
-    const peer = useMemo(()=>(new Peer()),[]);
     peer.on('open', function(id) {
-        setPeerId(id);
+        setPeerId(id)
+        console.log(id)
         socket.peerId = id
-      });
+        socket.creater=false
+    });
     
     useEffect(() => {
 		navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
@@ -35,25 +33,38 @@ const Calling =() =>{
           setIdToCall(user.peerId)
 	}, [])
 
+
+    socket.on("ReadyToCall",(data)=>{
+        const call = peer.call(data.createrPeerId,stream);
+        call.on("stream",(stream)=>userVideo.current.srcObject = stream)
+        setCallAccepted(true)
+    })
+
     const makeCall = ()=>{
 
-        var call = peer.call(idToCall,stream);
-            call.on("stream",(stream)=>userVideo.current.srcObject = stream)
-            setCallAccepted(true)
+        const data ={
+            name:user.name,
+            idToCall,
+            mySocketId:socket.id,
+            myPeerId:socket.peerId,
+            creater:false
+        }
+        socket.emit("calling",data)
+       // console.log(data,socket.peerId)
+        // var call = peer.call(idToCall,stream);
+        //     call.on("stream",(stream)=>userVideo.current.srcObject = stream)
+        //     setCallAccepted(true)
     }
 
 
-
-
-	
     return(
         <>
         <div className="Main">
             <div className="header">
                     <h3>{user.name}</h3>
                     <div>
-                   <h3>Room Id:{user.peerId}</h3>
-                   <CopyToClipboard text={user.peerId} style={{ marginBottom: "2rem" }}>
+                   <h3>Room Id:{socket.peerId}</h3>
+                   <CopyToClipboard text={socket.peerId} style={{ marginBottom: "2rem" }}>
                    <button onClick={()=>{}}>
                     Copy To clipboard
                     </button>  

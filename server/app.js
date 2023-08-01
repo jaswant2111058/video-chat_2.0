@@ -16,8 +16,13 @@ io.on("connection", (socket) => {
 		socket.broadcast.emit("callEnded")
 	})
 
-	socket.on("callUser", (data) => {
-		io.to(data.userToCall).emit("callUser", { signal: data.signalData, from: data.from, name: data.name })
+	socket.on("calling", (data) => {
+		const detail =io.to(data.idToCall).emit("IncomingCall", data)
+		console.log(detail,"yes")
+	})
+	socket.on("readyToAccept",(data)=>{
+		io.to(data.mySocketId).emit("ReadyToCall", data)
+		console.log(data)
 	})
  
 	socket.on("answerCall", (data) => {
