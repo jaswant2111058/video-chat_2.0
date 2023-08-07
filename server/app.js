@@ -10,19 +10,22 @@ const io = require("socket.io")(server, {
 })
 
 io.on("connection", (socket) => {
-	socket.emit("me", socket.id)
+	
+
+	console.log(socket.id)
 	
 	socket.on("disconnect", () => {
 		socket.broadcast.emit("callEnded")
 	})
 
 	socket.on("calling", (data) => {
-		const detail =io.to(data.idToCall).emit("IncomingCall", data)
-		console.log(detail,"yes")
+		//console.log("callint to incomming :/n",data)
+		io.to(data.idToCall).emit("IncomingCall", data)
+		
 	})
 	socket.on("readyToAccept",(data)=>{
-		io.to(data.mySocketId).emit("ReadyToCall", data)
-		console.log(data)
+		console.log("readyToCall",data)
+		io.to(data.mySocketId).emit("ReadyToCall",data)
 	})
  
 	socket.on("answerCall", (data) => {

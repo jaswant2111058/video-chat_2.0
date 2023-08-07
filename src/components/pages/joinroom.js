@@ -16,13 +16,11 @@ const JoinRoom =() =>{
                 <input
                 type="text"
                 name="name"
-                value={name}
                 onChange={(e)=>{setName(e.target.value)}}
                 />
                 <input
                 type="text"
                 name="name"
-                value={peerId}
                 onChange={(e)=>{setPeerId(e.target.value)}}
                 />
                 <button className="JoinBtn" onClick={()=>{

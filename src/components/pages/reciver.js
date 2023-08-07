@@ -13,6 +13,7 @@ const Calling =() =>{
     
 	const [ stream, setStream ] = useState()
 	const [ callAccepted, setCallAccepted ] = useState(false)
+    const [ readyToCall,setReadyToCall]= useState(false)
 	const [ idToCall, setIdToCall ] = useState()
 	const myVideo = useRef()
 	const userVideo = useRef()
@@ -34,13 +35,33 @@ const Calling =() =>{
 	}, [])
 
 
-    socket.on("ReadyToCall",(data)=>{
-        const call = peer.call(data.createrPeerId,stream);
-        call.on("stream",(stream)=>userVideo.current.srcObject = stream)
+    socket.on("ReadyToCall", async (data)=>{
+        console.log("recieved")
+        socket.caller = data
         setCallAccepted(true)
+        setReadyToCall(true)
     })
 
-    const makeCall = ()=>{
+    useEffect(()=>{
+
+        if(readyToCall){
+            const call =  peer.call(socket.caller.peerIdToCall,stream);
+             call.on("stream",(stream)=>{
+            userVideo.current.srcObject = stream 
+             })
+        }
+
+    },[readyToCall])
+    // const call =  peer.call(data.createrPeerId,stream);
+    // call.on("stream",(stream)=>{
+    //     userVideo.current.srcObject = stream 
+    //     setCallAccepted(true)
+    // })
+    // setCallAccepted(true)
+
+
+
+    function makeCall (){
 
         const data ={
             name:user.name,
@@ -49,13 +70,11 @@ const Calling =() =>{
             myPeerId:socket.peerId,
             creater:false
         }
-        socket.emit("calling",data)
-       // console.log(data,socket.peerId)
-        // var call = peer.call(idToCall,stream);
+       socket.emit("calling",data)
+        // var call = peer.call(user.peerId,stream);
         //     call.on("stream",(stream)=>userVideo.current.srcObject = stream)
         //     setCallAccepted(true)
     }
-
 
     return(
         <>
@@ -70,7 +89,7 @@ const Calling =() =>{
                     </button>  
                     </CopyToClipboard>
             </div>
-            <button onClick={makeCall}> Call </button>
+            <button onClick={()=>makeCall()}> Call </button>
             <div className="callingScreen">
                 <div className="video">
 					{ <video playsInline muted ref={myVideo} autoPlay style={{ width: "300px" }} />}
@@ -80,9 +99,7 @@ const Calling =() =>{
 					<video playsInline ref={userVideo} autoPlay style={{ width: "300px"}} />:
 					null}
 				</div>
-            </div>
-                    
-                    
+            </div> 
             </div>
         </div>
 
